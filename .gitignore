@@ -1,7 +1,6 @@
 # Prerequisites
 *.d
 *.vscode
-*crescent.cpp
 
 # Compiled Object files
 *.slo

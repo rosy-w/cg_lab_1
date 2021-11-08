@@ -1,12 +1,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <math.h>
+#include<vector>
 
 #include <iostream>
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
-#define M_PI 3.142
+
+void mainCircle(GLuint& vao, GLuint& vbo, GLfloat x, GLfloat y, GLdouble radius);
+
 
 
 void semicircle();
@@ -55,6 +58,12 @@ const char* fragmentShader4Source = "#version 330 core\n"
 "{\n"
 "   FragColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
 "}\n\0";
+const char* fragmentShader5Source = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"   FragColor = vec4(0.2f, 0.3f, 0.4f, 1.0f);\n"
+"}\n\0";
 
 // glfw: when window size changed this callback function executes // glfwSetFramebufferSizeCallback
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -101,9 +110,11 @@ int main()
     unsigned int fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER);
     unsigned int fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
     unsigned int fragmentShaderBlack = glCreateShader(GL_FRAGMENT_SHADER);
+    unsigned int fragmentShaderBackground = glCreateShader(GL_FRAGMENT_SHADER);
     unsigned int shaderProgramOrange = glCreateProgram();
     unsigned int shaderProgramYellow = glCreateProgram();
     unsigned int shaderProgramBlack = glCreateProgram(); 
+    unsigned int shaderProgramBackground = glCreateProgram(); 
 
 
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -115,6 +126,8 @@ int main()
     glCompileShader(fragmentShaderYellow);
     glShaderSource(fragmentShaderBlack, 1, &fragmentShader4Source, NULL);
     glCompileShader(fragmentShaderBlack); 
+    glShaderSource(fragmentShaderBackground, 1, &fragmentShader5Source, NULL);
+    glCompileShader(fragmentShaderBackground); 
 
 
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -151,6 +164,11 @@ int main()
     glAttachShader(shaderProgramBlack, vertexShader);
     glAttachShader(shaderProgramBlack , fragmentShaderBlack);
     glLinkProgram(shaderProgramBlack); 
+
+    glAttachShader(shaderProgramBackground, vertexShader);
+    glAttachShader(shaderProgramBackground , fragmentShaderBackground);
+    glLinkProgram(shaderProgramBackground); 
+
 
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
@@ -216,9 +234,9 @@ int main()
     };
 
     // set vertex buffer object anb vertex array object and element buffer objects 
-    unsigned int VBOs[7], VAOs[7], EBOs[6];
-    glGenVertexArrays(7, VAOs);
-    glGenBuffers(7, VBOs);
+    unsigned int VBOs[9], VAOs[9], EBOs[6];
+    glGenVertexArrays(9, VAOs);
+    glGenBuffers(9, VBOs);
     glGenBuffers(6, EBOs);
 
     //rectangle body setup 
@@ -324,11 +342,11 @@ int main()
         glBindVertexArray(VAOs[1]);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);	// this call should output a yellow triangle        
 
-
         //Draw the circle using the next VAO
         glUseProgram(shaderProgramYellow);
         glBindVertexArray(VAOs[2]);
         semicircle();
+
 
         // draw rectangle door that is orange
         glUseProgram(shaderProgramYellow);
@@ -345,19 +363,20 @@ int main()
         glBindVertexArray(VAOs[5]);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        //Draw the circle using the next VAO
+        //Draw the doorknob using the next VAO
         glUseProgram(shaderProgramOrange);
         glBindVertexArray(VAOs[6]);
-        circle();
+        mainCircle(VAOs[6],VBOs[6],0.06f,-0.5f,0.02);
 
+        //Draw the crescent Circle using the next VAO
+        glUseProgram(shaderProgramYellow);
+        mainCircle(VAOs[7],VBOs[7],0.4f,0.7f,0.2);
 
-        /*
-                //Draw the circle for crescent using the next VAO
-                glUseProgram(shaderProgramYellow);
-                glBindVertexArray(VAOs[4]);
-                circle1(); */
+        //Draw the crescent background using the next VAO
+        glUseProgram(shaderProgramBackground);
+        mainCircle(VAOs[8],VBOs[8],0.3f,0.7f,0.2);
 
-                // glfw: swap buffers
+        // glfw: swap buffers
         glfwSwapBuffers(window);
 
         // glfw: poll IO events (keys & mouse)
@@ -366,8 +385,8 @@ int main()
     }
 
     // de-allocate all resources
-    glDeleteVertexArrays(7, VAOs);
-    glDeleteBuffers(7, VBOs);
+    glDeleteVertexArrays(9, VAOs);
+    glDeleteBuffers(9, VBOs);
     glDeleteBuffers(6, EBOs);
     glDeleteProgram(shaderProgram);
     glDeleteProgram(shaderProgramOrange);
@@ -489,4 +508,41 @@ void circle() {
     glDrawArrays(GL_TRIANGLE_FAN, 0, DIV_COUNT + 2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+void mainCircle(GLuint& vao, GLuint& vbo, GLfloat x, GLfloat y, GLdouble radius){
+    GLint numberOfSides=100;
+    int numVertices = numberOfSides + 2;
+
+    GLdouble twicePi = 8.0f * M_PI;
+
+    std::vector<GLdouble> circleVerticesX;
+    std::vector<GLdouble> circleVerticesY;
+
+    circleVerticesX.push_back(x);
+    circleVerticesY.push_back(y);
+
+    for (int i = 1; i < numVertices; i++) {
+        circleVerticesX.push_back(x + (radius *
+            cos(i * twicePi / numberOfSides)));
+        circleVerticesY.push_back(y + (radius *
+            sin(i * twicePi / numberOfSides)));
+    }
+
+    std::vector<GLdouble> vertices;
+    for (int i = 0; i < numVertices; i++) {
+        vertices.push_back(circleVerticesX[i]);
+        vertices.push_back(circleVerticesY[i]);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(GLdouble), vertices.data(), GL_STATIC_DRAW);
+    glBindVertexArray(vao);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE,2 * sizeof(GLdouble), (void*)0);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 27);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
 }
