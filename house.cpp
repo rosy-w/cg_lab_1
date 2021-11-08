@@ -6,14 +6,16 @@
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
+#define M_PI 3.142
 
 
 void semicircle();
+void circle();
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const char* vertexShaderSource = 
+const char* vertexShaderSource =
 "#version 450 core\n"
 "layout (location = 0) in vec3 aPos;\n"
 "void main()\n"
@@ -21,7 +23,7 @@ const char* vertexShaderSource =
 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 "}\n\0";
 
-const char* fragmentShaderSource = 
+const char* fragmentShaderSource =
 "#version 450 core\n"
 "out vec4 FragmentColor;\n"
 "void main()\n"
@@ -29,18 +31,30 @@ const char* fragmentShaderSource =
 "   FragmentColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 "}\n\0";
 
-const char *fragmentShader1Source = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
-const char *fragmentShader2Source = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
-    "}\n\0";
+const char* fragmentShader1Source = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\n\0";
+const char* fragmentShader2Source = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"   FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
+"}\n\0";
+const char* fragmentShader3Source = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"   FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
+"}\n\0";
+const char* fragmentShader4Source = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"   FragColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
+"}\n\0";
 
 // glfw: when window size changed this callback function executes // glfwSetFramebufferSizeCallback
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -86,16 +100,22 @@ int main()
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     unsigned int fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER);
     unsigned int fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER);
+    unsigned int fragmentShaderBlack = glCreateShader(GL_FRAGMENT_SHADER);
     unsigned int shaderProgramOrange = glCreateProgram();
     unsigned int shaderProgramYellow = glCreateProgram();
+    unsigned int shaderProgramBlack = glCreateProgram(); 
+
 
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
 
-    glShaderSource(fragmentShaderOrange,1,&fragmentShader1Source,NULL);
+    glShaderSource(fragmentShaderOrange, 1, &fragmentShader1Source, NULL);
     glCompileShader(fragmentShaderOrange);
-    glShaderSource(fragmentShaderYellow,1,&fragmentShader2Source,NULL);
+    glShaderSource(fragmentShaderYellow, 1, &fragmentShader2Source, NULL);
     glCompileShader(fragmentShaderYellow);
+    glShaderSource(fragmentShaderBlack, 1, &fragmentShader4Source, NULL);
+    glCompileShader(fragmentShaderBlack); 
+
 
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
     if (!success) {
@@ -128,6 +148,10 @@ int main()
     glAttachShader(shaderProgramYellow, fragmentShaderYellow);
     glLinkProgram(shaderProgramYellow);
 
+    glAttachShader(shaderProgramBlack, vertexShader);
+    glAttachShader(shaderProgramBlack , fragmentShaderBlack);
+    glLinkProgram(shaderProgramBlack); 
+
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, NULL, errorInfo);
@@ -139,47 +163,66 @@ int main()
     glDeleteShader(fragmentShader);
 
     // set vertex data 
-    float vertices[] = {
+    GLfloat vertices[] = {
        0.4f,  -0.1f, 0.0f,  // top right // 0
        0.4f, -0.7f, 0.0f,  // bottom right // 1
       -0.4f, -0.7f, 0.0f,  // bottom left // 2
       -0.4f,  -0.1f, 0.0f   // top left  // 3
     };
-    float roof[] = {
+    GLfloat roof[] = {
       -0.5f,  0.1f, 0.0f,   // top left //0 
       -0.5f,  -0.1f, 0.0f,   // bottom left //1
        0.5f,  0.1f, 0.0f,  // top right //2
        0.5f,  -0.1f, 0.0f  // bottom right //3
-     };
-     float door[]={
-        0.1f,  -0.3f, 0.0f,  // top right // 0
-       0.1f, -0.7f, 0.0f,  // bottom right // 1
-      -0.1f, -0.7f, 0.0f,  // bottom left // 2
-      -0.1f,  -0.3f, 0.0f   // top left  // 3
+    };
+    GLfloat door[] = {
+       0.1f,  -0.3f, 0.0f,  // top right // 0
+      0.1f, -0.7f, 0.0f,  // bottom right // 1
+     -0.1f, -0.7f, 0.0f,  // bottom left // 2
+     -0.1f,  -0.3f, 0.0f   // top left  // 3
+    };
+    GLfloat windows1[] = {
+       -0.15f,  -0.25f, 0.0f,  // top right // 0
+      -0.15f, -0.5f, 0.0f,  // bottom right // 1
+     -0.35f, -0.5f, 0.0f,  // bottom left // 2
+     -0.35f,  -0.25f, 0.0f   // top left  // 3
+    };
+    GLfloat windows2[] = {
+      0.35f,  -0.25f, 0.0f,  // top right // 0
+      0.35f, -0.5f, 0.0f,  // bottom right // 1
+      0.15f, -0.5f, 0.0f,  // bottom left // 2
+      0.15f,  -0.25f, 0.0f   // top left  // 3
     };
     // index buffer // Element Buffer Objects (EBO)
-    unsigned int indices[] = {  
+    unsigned int indices[] = {
         0, 1, 3,   // first triangle
         1, 2, 3    // second rectangle
     };
-    unsigned int indices1[]={
+    unsigned int indices1[] = {
         0, 1, 3,   // first triangle
-        0, 2, 3  
+        0, 2, 3
     };
-    unsigned int indices2[] = {  
+    unsigned int indices2[] = {
         0, 1, 3,   // first triangle
         1, 2, 3    // second rectangle
     };
-
+    unsigned int indices3[] = {
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second rectangle
+    };
+    unsigned int indices4[] = {
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second rectangle
+    };
 
     // set vertex buffer object anb vertex array object and element buffer objects 
-    unsigned int VBOs[5], VAOs[5], EBOs[3];
-    glGenVertexArrays(5, VAOs);
-    glGenBuffers(5, VBOs);
-    glGenBuffers(3, EBOs);
-    
-//rectangle body setup 
-    // bind vertex array object
+    unsigned int VBOs[7], VAOs[7], EBOs[6];
+    glGenVertexArrays(7, VAOs);
+    glGenBuffers(7, VBOs);
+    glGenBuffers(6, EBOs);
+
+    //rectangle body setup 
+        // bind vertex array object
     glBindVertexArray(VAOs[0]);
 
     // bind vertex buffer object
@@ -195,8 +238,8 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-//rectangle roof setup
-    // bind vertex array object
+    //rectangle roof setup
+        // bind vertex array object
     glBindVertexArray(VAOs[1]);
 
     // bind vertex buffer object
@@ -212,12 +255,12 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-//door setup
-    // bind vertex array object
+    //door setup
+        // bind vertex array object
     glBindVertexArray(VAOs[3]);
 
     // bind vertex buffer object
-    glBindBuffer(GL_ARRAY_BUFFER, VBOs[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(door), door, GL_STATIC_DRAW);
 
     // bind element buffer objects
@@ -229,6 +272,39 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    //windows setup
+       // bind vertex array object
+    glBindVertexArray(VAOs[4]);
+
+    // bind vertex buffer object
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[4]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(windows1), windows1, GL_STATIC_DRAW);
+
+    // bind element buffer objects
+    // EBO is stored in the VAO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[2]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices3), indices3, GL_STATIC_DRAW);
+
+    // registered VBO as the vertex attributes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    //windows2 setup
+       // bind vertex array object
+    glBindVertexArray(VAOs[5]);
+
+    // bind vertex buffer object
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[5]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(windows2), windows2, GL_STATIC_DRAW);
+
+    // bind element buffer objects
+    // EBO is stored in the VAO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[2]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices4), indices4, GL_STATIC_DRAW);
+
+    // registered VBO as the vertex attributes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
     // render loop
     while (!glfwWindowShouldClose(window)) {
@@ -237,18 +313,18 @@ int main()
         // render
         glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
- 
-         // draw triangles for rectangle that is orange
+
+        // draw triangles for rectangle that is orange
         glUseProgram(shaderProgramOrange);
-        glBindVertexArray(VAOs[0]); 
+        glBindVertexArray(VAOs[0]);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // then we draw the roof using the data from the second VAO// when we draw the second triangle we want to use a different shader program so we switch to the shader program with our yellow fragment shader.
         glUseProgram(shaderProgramYellow);
         glBindVertexArray(VAOs[1]);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);	// this call should output a yellow triangle        
- 
- 
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);	// this call should output a yellow triangle        
+
+
         //Draw the circle using the next VAO
         glUseProgram(shaderProgramYellow);
         glBindVertexArray(VAOs[2]);
@@ -256,15 +332,32 @@ int main()
 
         // draw rectangle door that is orange
         glUseProgram(shaderProgramYellow);
-        glBindVertexArray(VAOs[3]); 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
-/* 
-        //Draw the circle for crescent using the next VAO
-        glUseProgram(shaderProgramYellow);
-        glBindVertexArray(VAOs[4]);
-        circle1(); */
+        glBindVertexArray(VAOs[3]);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        // glfw: swap buffers
+        // draw square window that is black
+        glUseProgram(shaderProgramBlack);
+        glBindVertexArray(VAOs[4]);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // draw square window that is black
+        glUseProgram(shaderProgramBlack);
+        glBindVertexArray(VAOs[5]);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        //Draw the circle using the next VAO
+        glUseProgram(shaderProgramOrange);
+        glBindVertexArray(VAOs[6]);
+        circle();
+
+
+        /*
+                //Draw the circle for crescent using the next VAO
+                glUseProgram(shaderProgramYellow);
+                glBindVertexArray(VAOs[4]);
+                circle1(); */
+
+                // glfw: swap buffers
         glfwSwapBuffers(window);
 
         // glfw: poll IO events (keys & mouse)
@@ -273,70 +366,127 @@ int main()
     }
 
     // de-allocate all resources
-    glDeleteVertexArrays(5, VAOs);
-    glDeleteBuffers(5, VBOs);
-    glDeleteBuffers(3, EBOs);
+    glDeleteVertexArrays(7, VAOs);
+    glDeleteBuffers(7, VBOs);
+    glDeleteBuffers(6, EBOs);
     glDeleteProgram(shaderProgram);
     glDeleteProgram(shaderProgramOrange);
     glDeleteProgram(shaderProgramYellow);
+    glDeleteProgram(shaderProgramBlack);
 
     // glfw: terminate and clear all previously GLFW allocated resources
     glfwTerminate();
     return 0;
 }
-void semicircle(){
+void semicircle() {
     // Number of segments the circle is divided into.
-const unsigned DIV_COUNT = 100;
+    const unsigned DIV_COUNT = 100;
 
-// Will use a triangle fan rooted at the origin to draw the circle. So one additional
-// point is needed for the origin, and another one because the first point is repeated
-// as the last one to close the circle.
-GLfloat* coordA = new GLfloat[(DIV_COUNT + 2) * 2];
+    // Will use a triangle fan rooted at the origin to draw the circle. So one additional
+    // point is needed for the origin, and another one because the first point is repeated
+    // as the last one to close the circle.
+    GLfloat* coordA = new GLfloat[(DIV_COUNT + 2) * 2];
 
-// Origin.
-unsigned coordIdx = 0;
-coordA[coordIdx++] = 0.0f;
-coordA[coordIdx++] = 0.0f;
+    // Origin.
+    unsigned coordIdx = 0;
+    coordA[coordIdx++] = 0.0f;
+    coordA[coordIdx++] = 0.0f;
 
-// Calculate angle increment from point to point, and its cos/sin.
-float angInc = 2.0f * M_PI / static_cast<float>(DIV_COUNT);
-float cosInc = cos(angInc);
-float sinInc = sin(angInc);
+    // Calculate angle increment from point to point, and its cos/sin.
+    float angInc = 2.0f * M_PI / static_cast<float>(DIV_COUNT);
+    float cosInc = cos(angInc);
+    float sinInc = sin(angInc);
 
-// Start with vector (1.0f, 0.0f), ...
-coordA[coordIdx++] = 0.4f;
-coordA[coordIdx++] = 0.0f;
+    // Start with vector (1.0f, 0.0f), ...
+    coordA[coordIdx++] = 0.4f;
+    coordA[coordIdx++] = 0.0f;
 
-// ... and then rotate it by angInc for each point.
-float xc = 0.4f;
-float yc = 0.0f;
-for (unsigned iDiv = 1; iDiv < DIV_COUNT; ++iDiv) {
-    float xcNew = cosInc * xc - sinInc * yc;
-    yc = sinInc * xc + cosInc * yc;
-    xc = xcNew;
+    // ... and then rotate it by angInc for each point.
+    float xc = 0.4f;
+    float yc = 0.0f;
+    for (unsigned iDiv = 1; iDiv < DIV_COUNT; ++iDiv) {
+        float xcNew = cosInc * xc - sinInc * yc;
+        yc = sinInc * xc + cosInc * yc;
+        xc = xcNew;
 
-    coordA[coordIdx++] = xc;
-    coordA[coordIdx++] = yc;
+        coordA[coordIdx++] = xc;
+        coordA[coordIdx++] = yc;
+    }
+
+    // Repeat first point as last point to close circle.
+    coordA[coordIdx++] = 0.4f;
+    coordA[coordIdx++] = 0.0f;
+
+    GLuint vboId = 0;
+    glGenBuffers(1, &vboId);
+    glBindBuffer(GL_ARRAY_BUFFER, vboId);
+    glBufferData(GL_ARRAY_BUFFER, (DIV_COUNT + 2) * 2 * sizeof(GLfloat), coordA, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    delete[] coordA;
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, vboId);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, DIV_COUNT / 2 + 2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+void circle() {
+    // Number of segments the circle is divided into.
+    const unsigned DIV_COUNT = 100;
 
-// Repeat first point as last point to close circle.
-coordA[coordIdx++] = 0.4f;
-coordA[coordIdx++] = 0.0f;
+    // Will use a triangle fan rooted at the origin to draw the circle. So one additional
+    // point is needed for the origin, and another one because the first point is repeated
+    // as the last one to close the circle.
+    GLfloat* coordA = new GLfloat[(DIV_COUNT + 2) * 2];
 
-GLuint vboId = 0;
-glGenBuffers(1, &vboId);
-glBindBuffer(GL_ARRAY_BUFFER, vboId);
-glBufferData(GL_ARRAY_BUFFER, (DIV_COUNT + 2) * 2 * sizeof(GLfloat), coordA, GL_STATIC_DRAW);
-glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Origin.
+    unsigned coordIdx = 0;
+    coordA[coordIdx++] = 0.0f;
+    coordA[coordIdx++] = 0.0f;
 
-delete[] coordA;
+    // Calculate angle increment from point to point, and its cos/sin.
+    float angInc = 2.0f * M_PI / static_cast<float>(DIV_COUNT);
+    float cosInc = cos(angInc);
+    float sinInc = sin(angInc);
+
+    // Start with vector (1.0f, 0.0f), ...
+    coordA[coordIdx++] = 0.03f;
+    coordA[coordIdx++] = 0.0f;
+
+    // ... and then rotate it by angInc for each point.
+    float xc = 0.03f;
+    float yc = 0.0f;
+    for (unsigned iDiv = 1; iDiv < DIV_COUNT; ++iDiv) {
+        float xcNew = cosInc * xc - sinInc * yc;
+        yc = sinInc * xc + cosInc * yc;
+        xc = xcNew;
+
+        coordA[coordIdx++] = xc;
+        coordA[coordIdx++] = yc;
+    }
+
+    // Repeat first point as last point to close circle.
+    coordA[coordIdx++] = 0.03f;
+    coordA[coordIdx++] = 0.0f;
+
+    GLuint vboId = 0;
+    glGenBuffers(1, &vboId);
+    glBindBuffer(GL_ARRAY_BUFFER, vboId);
+    glBufferData(GL_ARRAY_BUFFER, (DIV_COUNT + 2) * 2 * sizeof(GLfloat), coordA, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    delete[] coordA;
 
 
-glBindBuffer(GL_ARRAY_BUFFER, vboId);
-glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, vboId);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
 
-glDrawArrays(GL_TRIANGLE_FAN, 0, DIV_COUNT/2 +2);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, DIV_COUNT + 2);
 
-glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
