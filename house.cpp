@@ -233,6 +233,30 @@ int main()
      -0.345f, -0.345f, 0.0f,  // bottom left // 2
      -0.345f,  -0.255f, 0.0f   // top left  // 3
     };
+    GLfloat mini5[] = {
+       0.345f,  -0.255f, 0.0f,  // top right // 0
+      0.345f, -0.345f, 0.0f,  // bottom right // 1
+     0.255f, -0.345f, 0.0f,  // bottom left // 2
+     0.255f,  -0.255f, 0.0f   // top left  // 3
+    };
+    GLfloat mini6[] = {
+       0.345f,  -0.355f, 0.0f,  // top right // 0
+      0.345f, -0.445f, 0.0f,  // bottom right // 1
+     0.255f, -0.445f, 0.0f,  // bottom left // 2
+     0.255f,  -0.355f, 0.0f   // top left  // 3
+    };
+    GLfloat mini7[] = {
+       0.245f,  -0.355f, 0.0f,  // top right // 0
+      0.245f, -0.445f, 0.0f,  // bottom right // 1
+     0.155f, -0.445f, 0.0f,  // bottom left // 2
+     0.155f,  -0.355f, 0.0f   // top left  // 3
+    };
+    GLfloat mini8[] = {
+       0.245f,  -0.255f, 0.0f,  // top right // 0
+      0.245f, -0.345f, 0.0f,  // bottom right // 1
+     0.155f, -0.345f, 0.0f,  // bottom left // 2
+     0.155f,  -0.255f, 0.0f   // top left  // 3
+    };
     
     // index buffer // Element Buffer Objects (EBO)
     unsigned int indices[] = {
@@ -271,12 +295,28 @@ int main()
         0, 1, 3,   // first triangle
         1, 2, 3    // second rectangle
     };
+    unsigned int indices9[] = {
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second rectangle
+    };
+    unsigned int indices10[] = {
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second rectangle
+    };
+    unsigned int indices11[] = {
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second rectangle
+    };
+    unsigned int indices12[] = {
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second rectangle
+    };
 
     // set vertex buffer object anb vertex array object and element buffer objects 
-    unsigned int VBOs[13], VAOs[13], EBOs[10];
-    glGenVertexArrays(13, VAOs);
-    glGenBuffers(13, VBOs);
-    glGenBuffers(10, EBOs);
+    unsigned int VBOs[17], VAOs[17], EBOs[14];
+    glGenVertexArrays(17, VAOs);
+    glGenBuffers(17, VBOs);
+    glGenBuffers(14, EBOs);
 
     //rectangle body setup 
         // bind vertex array object
@@ -430,6 +470,73 @@ int main()
     // registered VBO as the vertex attributes
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    //mini5 setup
+       // bind vertex array object
+    glBindVertexArray(VAOs[13]);
+
+    // bind vertex buffer object
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[13]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(mini5), mini5, GL_STATIC_DRAW);
+
+    // bind element buffer objects
+    // EBO is stored in the VAO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[7]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices9), indices9, GL_STATIC_DRAW);
+
+    // registered VBO as the vertex attributes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    //mini6 setup
+       // bind vertex array object
+    glBindVertexArray(VAOs[14]);
+
+    // bind vertex buffer object
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[14]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(mini6), mini6, GL_STATIC_DRAW);
+
+    // bind element buffer objects
+    // EBO is stored in the VAO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[8]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices10), indices10, GL_STATIC_DRAW);
+
+    // registered VBO as the vertex attributes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    //mini7 setup
+       // bind vertex array object
+    glBindVertexArray(VAOs[15]);
+
+    // bind vertex buffer object
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[15]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(mini7), mini7, GL_STATIC_DRAW);
+
+    // bind element buffer objects
+    // EBO is stored in the VAO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[9]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices11), indices11, GL_STATIC_DRAW);
+
+    // registered VBO as the vertex attributes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    //mini8 setup
+       // bind vertex array object
+    glBindVertexArray(VAOs[16]);
+
+    // bind vertex buffer object
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[16]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(mini8), mini8, GL_STATIC_DRAW);
+
+    // bind element buffer objects
+    // EBO is stored in the VAO
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[10]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices12), indices12, GL_STATIC_DRAW);
+
+    // registered VBO as the vertex attributes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
 
     // render loop
     while (!glfwWindowShouldClose(window)) {
@@ -471,7 +578,7 @@ int main()
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         //Draw the doorknob using the next VAO
-        glUseProgram(shaderProgramOrange);
+        glUseProgram(shaderProgramBackground);
         glBindVertexArray(VAOs[6]);
         mainCircle(VAOs[6],VBOs[6],0.06f,-0.5f,0.02);
 
@@ -499,6 +606,22 @@ int main()
         glUseProgram(shaderProgramBackground);
         glBindVertexArray(VAOs[12]);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // mini5
+        glUseProgram(shaderProgramBackground);
+        glBindVertexArray(VAOs[13]);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // mini6
+        glUseProgram(shaderProgramBackground);
+        glBindVertexArray(VAOs[14]);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // mini7
+        glUseProgram(shaderProgramBackground);
+        glBindVertexArray(VAOs[15]);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // mini8
+        glUseProgram(shaderProgramBackground);
+        glBindVertexArray(VAOs[16]);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers
         glfwSwapBuffers(window);
@@ -509,9 +632,9 @@ int main()
     }
 
     // de-allocate all resources
-    glDeleteVertexArrays(13, VAOs);
-    glDeleteBuffers(13, VBOs);
-    glDeleteBuffers(10, EBOs);
+    glDeleteVertexArrays(17, VAOs);
+    glDeleteBuffers(17, VBOs);
+    glDeleteBuffers(14, EBOs);
     glDeleteProgram(shaderProgram);
     glDeleteProgram(shaderProgramOrange);
     glDeleteProgram(shaderProgramYellow);
