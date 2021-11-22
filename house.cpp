@@ -63,7 +63,7 @@ const char* fragmentShader5Source = "#version 330 core\n"
 "   FragColor = vec4(0.2f, 0.3f, 0.4f, 1.0f);\n"
 "}\n\0";
 
-// glfw: when window size changed this callback function executes // glfwSetFramebufferSizeCallback
+// glfw: when window size changed this callback function executes the code // glfwSetFramebufferSizeCallback
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // glfw: the viewport matches the new window dimensions
     glViewport(0, 0, width, height);
@@ -77,13 +77,13 @@ void processInput(GLFWwindow* window) {
 
 int main()
 {
-    // glfw: initialize
+    // glfw: initialization
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // glfw: create window
+    // glfw: creating the  window
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "House", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << "\n";
@@ -99,7 +99,7 @@ int main()
         return -1;
     }
 
-    // build and compile shader program
+    // build and compiling the shader program
     int success;
     char errorInfo[512] = "";
 
